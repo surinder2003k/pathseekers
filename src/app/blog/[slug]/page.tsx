@@ -32,17 +32,45 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const baseUrl = "https://pathseekers.vercel.app";
+  // Use blog featured image, or fallback to school campus image
+  const ogImage = blog.featuredImage || `${baseUrl}/school/8.jpg`;
+  const ogImageUrl = ogImage.startsWith("http") ? ogImage : `${baseUrl}${ogImage}`;
+
   return {
     title: `${blog.metaTitle || blog.title} | Pathseekers School`,
     description: blog.metaDescription || blog.excerpt,
     keywords: blog.keywords ? blog.keywords.split(",").map((k: string) => k.trim()) : [],
+    alternates: {
+      canonical: `${baseUrl}/blog/${blog.slug}`,
+    },
     openGraph: {
       title: blog.title,
-      description: blog.excerpt,
-      images: blog.featuredImage ? [{ url: blog.featuredImage }] : []
-    }
+      description: blog.metaDescription || blog.excerpt,
+      url: `${baseUrl}/blog/${blog.slug}`,
+      siteName: "Pathseekers School Beas Punjab",
+      locale: "en_IN",
+      type: "article",
+      publishedTime: blog.publishedAt?.toISOString(),
+      modifiedTime: blog.updatedAt?.toISOString(),
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: blog.title,
+        }
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: blog.title,
+      description: blog.metaDescription || blog.excerpt,
+      images: [ogImageUrl],
+    },
   };
 }
+
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;

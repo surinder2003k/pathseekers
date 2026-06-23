@@ -77,9 +77,9 @@ export const metadata: Metadata = {
   description:
     "Pathseekers School, Dera Baba Jaimal Singh, Beas, Punjab – Best CBSE affiliated co-educational school (Affiliation No. 1630982). Pathseekers offers world-class education from nursery to Class XII across 25.79 acres. 100% CBSE board pass rate. Pathseekers Beas – Find your path, Create your future.",
   keywords: SCHOOL_KEYWORDS,
-  metadataBase: new URL(baseUrl),
+  metadataBase: new URL("https://pathseekers.vercel.app"),
   alternates: {
-    canonical: baseUrl,
+    canonical: "https://pathseekers.vercel.app",
   },
   openGraph: {
     title: "Pathseekers School Beas Punjab | Best CBSE School | Affiliation 1630982",
