@@ -128,7 +128,6 @@ export default function StudentsCornerPage() {
             <BellRing className="w-6 h-6 text-primary-700 animate-bounce" />
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-stone-900">Active Notice Board</h2>
           </div>
-
           <div className="space-y-6">
             {NOTICES.map((notice, idx) => (
               <motion.div
@@ -140,13 +139,13 @@ export default function StudentsCornerPage() {
                 className="bg-[#fafaf9] p-8 rounded-3xl border border-stone-200/50 shadow-sm glow-hover relative overflow-hidden"
               >
                 <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                  <span className="text-xs text-stone-400 font-bold">{notice.date}</span>
+                  <span className="text-xs text-stone-600 font-bold">{notice.date}</span>
                   <span className="inline-block px-2.5 py-0.5 bg-primary-100 text-primary-800 rounded-md text-[10px] font-bold uppercase tracking-wider">
                     {notice.badge}
                   </span>
                 </div>
                 <h3 className="font-serif text-lg font-bold text-stone-900 mb-2">{notice.title}</h3>
-                <p className="text-xs text-stone-500 leading-relaxed">{notice.desc}</p>
+                <p className="text-xs text-stone-650 leading-relaxed">{notice.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -177,7 +176,7 @@ export default function StudentsCornerPage() {
                   </div>
                   <span className="text-[10px] font-bold text-primary-600 uppercase tracking-wider">{res.category}</span>
                   <h3 className="font-serif text-sm font-bold text-stone-900 mt-1 mb-2 group-hover:text-primary-800 transition-colors">{res.title}</h3>
-                  <span className="text-[10px] text-stone-400 font-semibold">{res.size}</span>
+                  <span className="text-[10px] text-stone-600 font-semibold">{res.size}</span>
                 </div>
                 <a
                   href={res.href}

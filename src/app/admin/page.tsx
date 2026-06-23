@@ -21,7 +21,6 @@ export const revalidate = 0;
 export default async function AdminDashboard() {
   // Get counts
   const totalAdmins = await db.adminUser.count();
-  const totalStudents = await db.student.count();
   const totalBlogs = await db.blogPost.count();
   
   // Get total article views
@@ -32,7 +31,6 @@ export default async function AdminDashboard() {
   const logs = await db.editorialLog.findMany({ take: 5 });
 
   const stats = [
-    { label: "Total Students", value: totalStudents, change: "Enrolled in CBSE", icon: Users, color: "text-blue-450 bg-blue-500/10" },
     { label: "Admin Users", value: totalAdmins, change: "Access Verified", icon: FolderLock, color: "text-purple-450 bg-purple-500/10" },
     { label: "Blog Articles", value: totalBlogs, change: "Total Published", icon: BookOpen, color: "text-emerald-450 bg-emerald-500/10" },
     { label: "Total Views", value: totalViews, change: "Article Reach", icon: TrendingUp, color: "text-amber-450 bg-amber-500/10" },
@@ -64,7 +62,7 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {stats.map((stat, idx) => (
           <div key={idx} className="bg-slate-900/60 backdrop-blur border border-slate-800/80 p-6 rounded-2xl flex flex-col justify-between h-36 relative overflow-hidden group hover:border-primary-800 transition-all">
             <div className="flex justify-between items-start">
@@ -134,7 +132,6 @@ export default async function AdminDashboard() {
             
             <div className="space-y-3">
               {[
-                { label: "Student Records", href: "/admin/students", icon: Users },
                 { label: "All Blog Posts", href: "/admin/stories", icon: BookOpen },
                 { label: "Auto Publish Settings", href: "/admin/manager", icon: Settings },
               ].map((link, idx) => (

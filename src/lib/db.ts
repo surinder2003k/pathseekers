@@ -196,6 +196,9 @@ export const db = {
           return 0;
         });
       }
+      if (args?.take) {
+        list = list.slice(0, args.take);
+      }
       return list;
     },
     findUnique: async (args: any) => {
@@ -265,7 +268,14 @@ export const db = {
         try {
           const { data: dbData, error } = await supabase.from("BlogPost").update(updateData).eq("id", id).select().single();
           if (!error && dbData) return dbData;
-        } catch (e) {
+          if (error) {
+            console.error("Supabase blogPost.update error:", error.message, error.details, error.hint);
+            // Throw the actual Supabase error instead of silently falling through
+            throw new Error(`Update failed: ${error.message}`);
+          }
+        } catch (e: any) {
+          // If it's our own thrown error, re-throw it
+          if (e.message?.startsWith("Update failed:")) throw e;
           console.warn("Supabase update crash, using mock fallback", e);
         }
       }
@@ -323,6 +333,9 @@ export const db = {
       }
       let list = [...mock.students];
       if (args?.where?.class) list = list.filter(s => s.class === args.where.class);
+      if (args?.take) {
+        list = list.slice(0, args.take);
+      }
       return list;
     },
     findUnique: async (args: any) => {

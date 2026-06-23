@@ -55,6 +55,9 @@ export default function Footer() {
               <a href="#" className="w-8 h-8 rounded-full bg-stone-800 hover:bg-primary-800 flex items-center justify-center text-stone-300 hover:text-white transition-colors" aria-label="Youtube">
                 <YoutubeIcon className="w-4 h-4" />
               </a>
+              <a href="mailto:xyzg135@gmail.com" className="w-8 h-8 rounded-full bg-stone-800 hover:bg-primary-800 flex items-center justify-center text-stone-300 hover:text-white transition-colors" aria-label="Email">
+                <Mail className="w-4 h-4" />
+              </a>
             </div>
           </div>
 

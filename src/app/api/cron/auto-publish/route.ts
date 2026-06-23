@@ -94,6 +94,14 @@ export async function POST(req: Request) {
   return handleAutoPublish(req);
 }
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    .substring(0, 80);
+}
+
 async function handleAutoPublish(req: Request) {
   try {
     const url = new URL(req.url);
@@ -150,10 +158,15 @@ async function handleAutoPublish(req: Request) {
         console.error("Failed to fetch image for auto-publish topic", err);
       }
 
+      // Generate a unique slug
+      const baseSlug = slugify(blogContent.title || topic);
+      const slug = `${baseSlug}-${Date.now()}-${createdBlogs.length}`;
+
       // C. Save to DB
       const newBlog = await db.blogPost.create({
         data: {
           title: blogContent.title,
+          slug,
           excerpt: blogContent.excerpt,
           content: blogContent.content,
           featuredImage: imageUrl,

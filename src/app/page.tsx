@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, Shield, GraduationCap, Award, Compass, Heart, Use
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import StatsCounter from "@/components/ui/StatsCounter";
+import HeroVideo from "@/components/home/HeroVideo";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
@@ -77,22 +78,7 @@ export default async function Home() {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden">
-        {/* Background Video with Overlay */}
-        <div className="absolute inset-0 z-0 overflow-hidden bg-stone-900">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="none"
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center opacity-40 scale-105 transition-transform duration-1000"
-          >
-            <source src="https://www.pathseekers.edu.in/videos/virtual%20tour.mp4" type="video/mp4" />
-            <track kind="captions" srcLang="en" label="English" default />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-50/70 via-accent-cream/50 to-white"></div>
-        </div>
+        <HeroVideo />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-12">
           {/* CBSE Result Banner */}

@@ -23,7 +23,6 @@ import {
 
 const ADMIN_NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/students", label: "Students", icon: Users },
   { href: "/admin/stories", label: "Blog Posts", icon: BookOpen },
   { href: "/admin/create", label: "Write Article", icon: PenTool },
   { href: "/admin/manager", label: "Auto Publish", icon: Settings },

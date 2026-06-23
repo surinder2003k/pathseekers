@@ -71,22 +71,22 @@ const baseUrl = getBaseUrl();
 
 export const metadata: Metadata = {
   title: {
-    default: "Pathseekers School Beas Punjab | Best CBSE School | Affiliation 1630982",
-    template: "%s | Pathseekers School Beas Punjab",
+    default: "Pathseekers School Beas | Best CBSE School Punjab",
+    template: "%s | Pathseekers School Beas",
   },
   description:
-    "Pathseekers School, Dera Baba Jaimal Singh, Beas, Punjab – Best CBSE affiliated co-educational school (Affiliation No. 1630982). Pathseekers offers world-class education from nursery to Class XII across 25.79 acres. 100% CBSE board pass rate. Pathseekers Beas – Find your path, Create your future.",
+    "Pathseekers School, Beas, Punjab – Top CBSE school (Aff. 1630982). Nursery to Class XII on 25-acre campus. 100% pass rate.",
   keywords: SCHOOL_KEYWORDS,
   metadataBase: new URL(baseUrl),
   alternates: {
     canonical: baseUrl,
   },
   openGraph: {
-    title: "Pathseekers School Beas Punjab | Best CBSE School | Affiliation 1630982",
+    title: "Pathseekers School Beas | Best CBSE School Punjab",
     description:
-      "Pathseekers School, Beas, Punjab – CBSE affiliated (Aff. 1630982). Premium co-educational school from nursery to Class XII. Pathseekers – Find your path, Create your future.",
+      "Top CBSE school in Beas, Punjab. Nursery to Class XII on a 25-acre campus. 100% board pass rate.",
     url: baseUrl,
-    siteName: "Pathseekers School Beas Punjab",
+    siteName: "Pathseekers School Beas",
     locale: "en_IN",
     type: "website",
     images: [
@@ -100,9 +100,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pathseekers School Beas Punjab | Best CBSE School",
+    title: "Pathseekers School Beas | Best CBSE School",
     description:
-      "Pathseekers – Best CBSE school in Beas, Punjab. Affiliation No. 1630982. Nursery to Class XII. 25-acre campus.",
+      "Top CBSE school in Beas, Punjab. Nursery to Class XII. 25-acre campus. 100% pass rate.",
     images: ["/school/8.jpg"],
   },
   robots: {
@@ -150,8 +150,6 @@ const schoolJsonLd = {
         latitude: 31.9133,
         longitude: 75.0025,
       },
-      telephone: "+91-XXXXX-XXXXX",
-      email: "xxx@pathseekers.edu.in",
       foundingDate: "2004",
       numberOfStudents: 1002,
       hasCredential: {
@@ -166,6 +164,11 @@ const schoolJsonLd = {
       },
       sameAs: [
         baseUrl,
+        "https://www.facebook.com/pathseekersschool",
+        "https://www.instagram.com/pathseekersschool",
+        "https://www.youtube.com/@pathseekersschool",
+        "https://x.com/pathseekersbeas",
+        "https://www.linkedin.com/company/pathseekers-school",
       ],
     },
     {

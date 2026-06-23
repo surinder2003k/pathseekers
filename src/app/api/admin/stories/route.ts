@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { action, id, title, excerpt, content, featuredImage, status, category, metaTitle, metaDescription, keywords, author } = body;
+    const { action, id, title, slug: bodySlug, excerpt, content, featuredImage, status, category, metaTitle, metaDescription, keywords, author } = body;
 
     if (action === "create") {
       if (!title) {
@@ -47,11 +47,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Story ID is required" }, { status: 400 });
       }
       
-      const slug = title ? title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : undefined;
+      // Use slug from form if provided (preserves existing slug), only regenerate as fallback
+      const slug = bodySlug || (title ? title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : undefined);
       
       // Build data object dynamically to avoid sending undefined fields or erasing database properties
       const data: any = {};
-      if (title !== undefined) { data.title = title; data.slug = slug; }
+      if (title !== undefined) { data.title = title; if (slug) data.slug = slug; }
       if (excerpt !== undefined) data.excerpt = excerpt;
       if (content !== undefined) data.content = content;
       if (featuredImage !== undefined) data.featuredImage = featuredImage;

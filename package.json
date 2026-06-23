@@ -20,6 +20,7 @@
     "lucide-react": "^1.21.0",
     "next": "16.2.9",
     "nodemailer": "^9.0.1",
+    "pg": "^8.22.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hot-toast": "^2.6.0"
@@ -34,5 +35,18 @@
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "replace_images.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surinder2003k/pathseekers.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/surinder2003k/pathseekers/issues"
+  },
+  "homepage": "https://github.com/surinder2003k/pathseekers#readme"
 }
