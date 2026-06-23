@@ -226,7 +226,7 @@ export default function EditorialStories() {
                         className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[9px] font-bold cursor-pointer transition-colors border ${
                           blog.status === "PUBLISHED"
                             ? "bg-emerald-950/60 border-emerald-800/40 text-emerald-350"
-                            : "bg-amber-955/60 border-amber-800/40 text-amber-350"
+                            : "bg-amber-900/60 border-amber-800/40 text-amber-350"
                         }`}
                       >
                         {blog.status === "PUBLISHED" ? "PUBLISHED" : "DRAFT"}
