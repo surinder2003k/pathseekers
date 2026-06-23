@@ -52,8 +52,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "Pathseekers School Beas Punjab",
       locale: "en_IN",
       type: "article",
-      publishedTime: blog.publishedAt?.toISOString(),
-      modifiedTime: blog.updatedAt?.toISOString(),
+      publishedTime: blog.publishedAt ? new Date(blog.publishedAt).toISOString() : undefined,
+      modifiedTime: blog.updatedAt ? new Date(blog.updatedAt).toISOString() : undefined,
       images: [
         {
           url: ogImageUrl,
