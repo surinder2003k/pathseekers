@@ -22,14 +22,15 @@ export async function POST(req: Request) {
     const { action, id, name, class: className, rollNo, parentName, parentPhone, parentEmail, attendance, photo, academicRecord, bulkData } = body;
 
     if (action === "create") {
-      if (!name || !className || !rollNo) {
-        return NextResponse.json({ error: "Name, Class, and Roll No are required" }, { status: 400 });
+      if (!name || !className) {
+        return NextResponse.json({ error: "Name and Class are required" }, { status: 400 });
       }
+      const finalRollNo = rollNo || `S-${Math.floor(1000 + Math.random() * 9000)}`;
       const student = await db.student.create({
         data: {
           name,
           class: className,
-          rollNo,
+          rollNo: finalRollNo,
           parentName: parentName || "",
           parentPhone: parentPhone || "",
           parentEmail: parentEmail || "",
@@ -50,11 +51,11 @@ export async function POST(req: Request) {
         data: {
           name,
           class: className,
-          rollNo,
+          rollNo: rollNo || undefined,
           parentName,
           parentPhone,
           parentEmail,
-          attendance: parseFloat(attendance) || 100.0,
+          attendance: attendance !== undefined ? (parseFloat(attendance) || 100.0) : undefined,
           photo,
           academicRecord
         }

@@ -7,6 +7,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
+import { getBaseUrl } from "@/lib/seo";
 
 // Inline social media icon components (lucide-react removed brand icons)
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -32,9 +33,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const baseUrl = "https://pathseekers.vercel.app";
+  const baseUrl = getBaseUrl();
   // Use blog featured image, or fallback to school campus image
-  const ogImage = blog.featuredImage || `${baseUrl}/school/8.jpg`;
+  const ogImage = blog.featuredImage || "/school/8.jpg";
   const ogImageUrl = ogImage.startsWith("http") ? ogImage : `${baseUrl}${ogImage}`;
 
   return {

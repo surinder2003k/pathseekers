@@ -264,13 +264,12 @@ export default function StudentDatabase() {
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Roll Number</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Roll Number (Optional)</label>
               <input
                 type="text"
-                required
                 value={form.rollNo}
                 onChange={(e) => setForm({ ...form, rollNo: e.target.value })}
-                placeholder="e.g. 1205"
+                placeholder="Auto-generated if left blank"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-950 text-xs text-slate-200 focus:outline-none"
               />
             </div>
