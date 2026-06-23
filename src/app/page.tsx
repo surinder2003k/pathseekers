@@ -82,10 +82,12 @@ export default async function Home() {
             loop
             muted
             playsInline
-            preload="metadata"
+            preload="none"
+            aria-hidden="true"
             className="absolute inset-0 w-full h-full object-cover object-center opacity-40 scale-105 transition-transform duration-1000"
           >
             <source src="https://www.pathseekers.edu.in/videos/virtual%20tour.mp4" type="video/mp4" />
+            <track kind="captions" srcLang="en" label="English" default />
           </video>
           <div className="absolute inset-0 bg-gradient-to-b from-primary-50/70 via-accent-cream/50 to-white"></div>
         </div>
@@ -133,10 +135,10 @@ export default async function Home() {
             {/* Notice Board */}
             <div className="lg:w-1/3 bg-[#fafaf9] border-r border-stone-200/50">
               <div className="bg-primary-900 p-6 text-white flex items-center justify-between">
-                <h3 className="font-serif text-xl font-bold flex items-center gap-3">
+                <h2 className="font-serif text-xl font-bold flex items-center gap-3">
                   <BookOpen className="w-5 h-5 text-accent-gold" />
                   Notice Board
-                </h3>
+                </h2>
               </div>
               <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
                 {[
@@ -357,7 +359,7 @@ export default async function Home() {
                     <p className="text-xs text-stone-500 line-clamp-3 mb-4">{blog.excerpt}</p>
                   </div>
                 </div>
-                <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-stone-100 text-[11px] text-stone-400">
+                <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-stone-100 text-[11px] text-stone-600 font-medium">
                   <span>{formatDate(blog.publishedAt)}</span>
                   <span>{blog.views} Views</span>
                 </div>
