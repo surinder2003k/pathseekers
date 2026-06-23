@@ -24,13 +24,9 @@ export default async function AdminDashboard() {
   const totalStudents = await db.student.count();
   const totalBlogs = await db.blogPost.count();
   
-  // Get total article views using aggregate
-  const viewsAggregate = await db.blogPost.aggregate({
-    _sum: {
-      views: true
-    }
-  });
-  const totalViews = viewsAggregate._sum.views || 0;
+  // Get total article views
+  const blogs = await db.blogPost.findMany();
+  const totalViews = blogs.reduce((sum: number, b: any) => sum + (b.views || 0), 0);
 
   // Get recent activity logs
   const logs = await db.editorialLog.findMany({ take: 5 });
