@@ -156,9 +156,9 @@ export default async function Home() {
                     </div>
                     <div>
                       <h4 className="font-semibold text-stone-800 text-sm hover:text-primary-600 cursor-pointer transition-colors">{notice.title}</h4>
-                      <span className="text-[10px] text-primary-600 uppercase tracking-widest mt-1.5 flex items-center gap-1 font-bold cursor-pointer">
+                      <Link href="/notices" className="text-[10px] text-primary-600 uppercase tracking-widest mt-1.5 flex items-center gap-1 font-bold cursor-pointer hover:text-primary-800 transition-colors">
                         View Notice <ArrowRight className="w-3 h-3" />
-                      </span>
+                      </Link>
                     </div>
                   </div>
                 ))}
@@ -270,7 +270,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {FACILITIES.map((fac, idx) => (
-              <div key={idx} className="bg-white rounded-2xl border border-stone-200/40 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all">
+              <Link href="/facilities" key={idx} className="bg-white rounded-2xl border border-stone-200/40 shadow-sm overflow-hidden flex flex-col justify-between group hover:shadow-md transition-all cursor-pointer block">
                 <div className="relative h-48 w-full overflow-hidden">
                   <Image
                     src={fac.image}
@@ -288,7 +288,7 @@ export default async function Home() {
                   <h3 className="font-serif text-lg font-bold text-stone-900 mb-2">{fac.title}</h3>
                   <p className="text-xs text-stone-500 leading-relaxed">{fac.desc}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -335,7 +335,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {latestBlogs.map((blog: any) => (
-              <article key={blog.id} className="bg-white border border-stone-200/50 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-md transition-all">
+              <Link href={`/blog/${blog.slug}`} key={blog.id} className="bg-white border border-stone-200/50 rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between group hover:shadow-md transition-all cursor-pointer block">
                 <div>
                   <div className="relative h-48 w-full overflow-hidden bg-stone-100">
                     {blog.featuredImage && (
@@ -354,7 +354,7 @@ export default async function Home() {
                       {blog.category}
                     </span>
                     <h3 className="font-serif text-lg font-bold text-stone-900 line-clamp-2 mb-2 group-hover:text-primary-800 transition-colors">
-                      <Link href={`/blog/${blog.slug}`}>{blog.title}</Link>
+                      {blog.title}
                     </h3>
                     <p className="text-xs text-stone-500 line-clamp-3 mb-4">{blog.excerpt}</p>
                   </div>
@@ -363,7 +363,7 @@ export default async function Home() {
                   <span>{formatDate(blog.publishedAt)}</span>
                   <span>{blog.views} Views</span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
         </div>

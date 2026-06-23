@@ -83,15 +83,8 @@ export default async function BlogPostPage({ params }: PageProps) {
     notFound();
   }
 
-  // Increment views
-  try {
-    await db.blogPost.update({
-      where: { id: blog.id },
-      data: { views: blog.views + 1 }
-    });
-  } catch (e) {
-    console.error("Failed to increment views:", e);
-  }
+  // Increment views logic has been removed from server render to prevent Next.js 15 crashing.
+  // Should be implemented via an API route triggered by a client component if needed.
 
   // Fetch related posts (same category, excluding current)
   const related = await db.blogPost.findMany({

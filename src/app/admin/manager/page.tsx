@@ -52,7 +52,7 @@ export default function SyncManager() {
             customCategories: data.settings.customCategories ?? []
           });
           // If the fetched category isn't one of the defaults or custom list, show custom input
-          const defaults = ["Education", "School Events", "Achievements", "News"];
+          const defaults = ["Education", "School Events", "Achievements", "News", "Autopost"];
           const customs = data.settings.customCategories ?? [];
           if (!defaults.includes(data.settings.category) && !customs.includes(data.settings.category)) {
             setShowCustomCategory(true);
@@ -287,6 +287,7 @@ export default function SyncManager() {
                       <option value="School Events">School Events</option>
                       <option value="Achievements">Achievements</option>
                       <option value="News">News</option>
+                      <option value="Autopost">Autopost</option>
                       
                       {/* Dynamic Custom Categories */}
                       {settings.customCategories && settings.customCategories.map((cat) => (

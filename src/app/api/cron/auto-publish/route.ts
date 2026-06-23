@@ -71,6 +71,18 @@ const TOPIC_SUGGESTIONS: Record<string, string[]> = {
     "Expansion of School Library: Over 5,000 New Titles Added",
     "Introducing Specialized Coaching for Competitive Examinations",
     "State-of-the-Art Language Lab Set Up to Enhance Communication Skills"
+  ],
+  "Autopost": [
+    "5 Ways to Enhance Daily Productivity in School",
+    "How Extracurriculars Shape a Child's Future",
+    "The Evolution of Smart Classrooms",
+    "A Guide to Effective Parent-Teacher Collaboration",
+    "Building Resilience in Modern Students",
+    "Top Study Hacks for Exam Seasons",
+    "Why Nutrition Plays a Crucial Role in Student Focus",
+    "Nurturing Emotional Intelligence Early On",
+    "The Benefits of Learning Multiple Languages",
+    "Celebrating Student Inclusivity and Diversity on Campus"
   ]
 };
 
