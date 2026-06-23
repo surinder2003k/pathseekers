@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum BlogPostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+}
+
+model AdminUser {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  role      Role     @default(ADMIN)
+  status    String   @default("ACTIVE")
+  clerkId   String   @unique
+  lastSeen  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Student {
+  id             String   @id @default(uuid())
+  name           String
+  class          String
+  rollNo         String
+  parentName     String
+  parentPhone    String
+  parentEmail    String
+  photo          String?
+  academicRecord String?  // JSON string representing grades/scores
+  attendance     Float    @default(100.0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model BlogPost {
+  id              String         @id @default(uuid())
+  title           String
+  slug            String         @unique
+  excerpt         String
+  content         String         @db.Text
+  featuredImage   String?
+  status          BlogPostStatus @default(DRAFT)
+  author          String         @default("AI Assistant")
+  category        String         @default("Education")
+  views           Int            @default(0)
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+}
+
+model SyncSettings {
+  id               String    @id @default("singleton")
+  autoPublish      Boolean   @default(false)
+  highFrequency    Boolean   @default(false)
+  regionalSync     Boolean   @default(true)
+  category         String    @default("Education")
+  scheduleTime     String    @default("08:00") // 24-hour format
+  lastExecutedAt   DateTime?
+  updatedAt        DateTime  @updatedAt
+  customCategories String    @default("")
+}
+
+model EditorialLog {
+  id        String   @id @default(uuid())
+  timestamp DateTime @default(now())
+  level     String   @default("INFO")
+  message   String   @db.Text
+}
