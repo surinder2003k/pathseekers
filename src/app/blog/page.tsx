@@ -7,7 +7,7 @@ import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 import BlogListingClient from "./BlogListingClient";
 
-export const revalidate = 60; // Revalidate every minute
+export const revalidate = 0; // Disable caching to show new blogs immediately
 
 export const metadata = {
   title: "Educational Blog & School Journal | Pathseekers",

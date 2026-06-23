@@ -7,6 +7,8 @@ import StatsCounter from "@/components/ui/StatsCounter";
 import { db } from "@/lib/db";
 import { formatDate } from "@/lib/utils";
 
+export const revalidate = 0;
+
 // Facilities list
 const FACILITIES = [
   {
