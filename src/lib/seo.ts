@@ -10,5 +10,5 @@ export const getBaseUrl = () => {
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
-  return "https://pathseekersschoolbeas.vercel.app";
+  return "https://pathseekers.vercel.app";
 };
