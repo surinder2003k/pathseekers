@@ -117,7 +117,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: "pathseekers-beas-cbse-school",
+    google: "7DDDhNUg6jYfqTlpcjhcRviMdzzUvxJd2Y-rKmNEqdk",
   },
   category: "education",
   classification: "School",
