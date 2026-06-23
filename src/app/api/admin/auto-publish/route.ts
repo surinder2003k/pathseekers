@@ -1,36 +1,76 @@
 import { NextResponse } from "next/server";
-import { generateBlogWithAI } from "@/lib/gemini";
+import { generateBlogWithAI, generateTopicsForCategory } from "@/lib/gemini";
 import { db } from "@/lib/db";
 
-// Topics to auto-generate when no specific topic is given
+// Expanded default topics to auto-generate when no specific topic is given
 const AUTO_TOPICS: Record<string, string[]> = {
   Education: [
-    "How CBSE Education Prepares Students for Real-World Challenges",
-    "The Importance of Holistic Learning in Modern Schools",
-    "How Technology is Changing Classrooms in Punjab",
-    "Building Good Study Habits from an Early Age",
-    "Why Physical Education Matters as Much as Academics",
+    "Fostering Critical Thinking in CBSE Primary Classes",
+    "Why Foundations Matter: Reading & Math in Classes I-III",
+    "Integrating Mindfulness and Yoga in Daily Class Routines",
+    "Parent Partnership: Guiding Academic Success at Home",
+    "The Role of STEM Education in Shaping Future-Ready Students",
+    "How to Choose the Right Stream After Class 10: Science, Commerce, or Humanities",
+    "Encouraging a Growth Mindset in Children: A Guide for Parents",
+    "The Importance of Values-Based Education in the 21st Century",
+    "How to Reduce Exam Stress: Practical Tips for CBSE Board Students",
+    "Supporting Your Child's Emotional Well-being During Teen Years",
+    "Why Co-Curricular Activities Are Essential for All-Round Development",
+    "Balancing Screen Time and Outdoor Play: Healthy Habits for Kids",
+    "The Art of Active Listening: Strengthening Parent-Child Relationships",
+    "Cultivating Reading Habits: How to Make Books Your Child's Best Friend",
+    "Fostering Creativity through Art and Craft in Early Schooling"
   ],
   "School Events": [
-    "Annual Sports Day Celebrations at Pathseekers School",
-    "Cultural Festival Highlights and Student Achievements",
-    "Science Exhibition Showcases Student Innovation",
-    "Independence Day Celebration at Pathseekers School",
-    "Annual Prize Distribution Ceremony Recap",
+    "Under the Spotlight: Visual & Performing Arts Celebrations",
+    "Green Pathseekers: Replanting Saplings Across Beas Punjab",
+    "Highlights of the Zonal Science and STEM Exhibitions 2026",
+    "Inside the DEAR Initiative: Fostering Silent Reading Habits",
+    "Pathseekers Annual Sports Meet: Celebrating Sportsmanship and Athletics",
+    "Celebrating Unity in Diversity: Traditional Festivals at Pathseekers",
+    "Annual Science and Art Exhibition: Where Innovation Meets Creativity",
+    "Glimpses of the Pathseekers Model United Nations (MUN) Conference",
+    "Inspiring Young Minds: Guest Lecture Series by Industry Experts",
+    "Inter-House Debate Championship: Developing Oratory and Logic",
+    "Pathseekers Community Outreach: Spreading Awareness on Health & Sanitation",
+    "Earth Day Celebration: School-wide Initiatives for a Greener Planet",
+    "Math Week Celebrations: Making Mathematics Fun and Interactive",
+    "Field Trips and Educational Tours: Learning Beyond the Classroom",
+    "Celebrating Teachers' Day: Students Expressing Gratitude and Respect"
   ],
   Achievements: [
-    "Pathseekers Students Win Regional Science Competition",
-    "Our Students Excel in National-Level Academic Olympiads",
-    "How Pathseekers Alumni Are Making a Difference",
-    "CBSE Board Results: Pathseekers Students Shine",
-    "Outstanding Achievements in Sports and Athletics",
+    "Triumphant Boards: How Pathseekers Maintains 100% CBSE Pass Rate",
+    "Regional Chess Gold: Spotlighting our Junior Competitors",
+    "Olympiad Victories: Pathseekers Secures State Math Ranks",
+    "Placement Report: Students Placed at India's Top Universities",
+    "Securing Gold at the State-Level Athletics Championship",
+    "Pathseekers Innovators Win First Prize in National Robofest",
+    "Outstanding CBSE Class 12 Merit List: Meet Our Toppers",
+    "Success in IIT-JEE and NEET: Celebrating Our Achievers' Hard Work",
+    "Inter-School Singing Trophy Won by Pathseekers Choir",
+    "Pathseekers Football Team Clinches the Zonal Championship Cup",
+    "Inspiring Journeys: Alumnus Spotlight on International Scholarships",
+    "Gold Medalists in Zonal Swimming Championship",
+    "Outstanding Performance in CBSE National Table Tennis Tournament",
+    "Best Delegate Awards Secured at the Prestigious Delhi MUN",
+    "Pathseekers Art Students Selected for National Art Exhibition"
   ],
   News: [
-    "New Digital Library Opens at Pathseekers School",
-    "Pathseekers Launches New After-School Programs",
-    "School Welcomes New Experienced Faculty Members",
-    "Smart Classrooms Now Available for All Grades",
-    "Pathseekers Partners with Local NGO for Community Education",
+    "Inauguration of new Robotic & IoT Labs in Senior Secondary Wings",
+    "Pathseekers Awarded Best Holistic School in District Summit",
+    "New Smartboards Enriched with Interactive Pedagogies Installed",
+    "Security Upgrades: Implementing Smart Gate Access Protocols",
+    "Announcing Admissions for Academic Session 2026-27: Apply Online",
+    "Upgrade of School Sports Complex: New Synthetic Athletic Track and Indoor Courts",
+    "Pathseekers Introduces Artificial Intelligence (AI) and Coding in Middle School",
+    "Welcome Back to School: Message from the Principal for the New Term",
+    "Environment Award: Pathseekers Named Greenest Campus in the Region",
+    "New Biology and Chemistry Labs Upgraded with Advanced Instruments",
+    "Launch of the Pathseekers Career Counseling Cell for Senior Students",
+    "Installation of High-Capacity Solar Panels: Moving Towards Clean Energy",
+    "Expansion of School Library: Over 5,000 New Titles Added",
+    "Introducing Specialized Coaching for Competitive Examinations",
+    "State-of-the-Art Language Lab Set Up to Enhance Communication Skills"
   ],
 };
 
@@ -42,21 +82,33 @@ function slugify(text: string) {
     .substring(0, 80);
 }
 
-function getRandomTopic(category: string): string {
-  const topics = AUTO_TOPICS[category] || AUTO_TOPICS["Education"];
-  return topics[Math.floor(Math.random() * topics.length)];
-}
-
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const category = body.category || "Education";
     const count = Math.min(Number(body.count) || 2, 5); // Generate 2-5 blogs max
 
+    let topics = AUTO_TOPICS[category];
+    
+    // If category is custom, generate topics dynamically using AI
+    if (!topics || topics.length === 0) {
+      try {
+        console.log(`No hardcoded topics for "${category}". Generating dynamically using AI...`);
+        topics = await generateTopicsForCategory(category);
+      } catch (err: any) {
+        console.error("Failed to generate topics dynamically:", err);
+        topics = AUTO_TOPICS["Education"];
+      }
+    }
+
+    // Pick unique topics for this batch (without duplicates)
+    const shuffled = [...topics].sort(() => 0.5 - Math.random());
+    const selectedTopics = shuffled.slice(0, count);
+
     const results: { title: string; status: string }[] = [];
 
-    for (let i = 0; i < count; i++) {
-      const topic = getRandomTopic(category);
+    for (let i = 0; i < selectedTopics.length; i++) {
+      const topic = selectedTopics[i];
       try {
         // Generate blog content using AI
         const generated = await generateBlogWithAI(topic, category);
@@ -117,3 +169,4 @@ export async function POST(req: Request) {
     );
   }
 }
+

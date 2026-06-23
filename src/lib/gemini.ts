@@ -295,3 +295,122 @@ Return ONLY a valid JSON object (no markdown, no backticks, no extra text):
   const matched = list.find(b => b.title.toLowerCase().includes(topic.toLowerCase()) || b.excerpt.toLowerCase().includes(topic.toLowerCase())) || list[Math.floor(Math.random() * list.length)];
   return { ...matched, author: "Academic Editorial Team", title: matched.title + ` (Inspired by: ${topic})`, category };
 }
+
+export async function generateTopicsForCategory(category: string): Promise<string[]> {
+  const prompt = `You are an SEO expert and educational copywriter for "Pathseekers School", a top CBSE school in Beas, Punjab.
+Generate a list of exactly 8 engaging, unique, high-SEO-value blog post topic ideas/titles under the category "${category}".
+Write simple, clear, catchy titles that parents and students in India/Punjab would search for (e.g., including terms like CBSE, Beas, Punjab, parenting, education, school activities).
+The titles must be in plain English and easy to understand.
+
+Return ONLY a valid JSON array of strings containing the titles. Do NOT return markdown, do NOT return backticks, do NOT return any introductory or concluding text.
+Example response format:
+[
+  "First topic idea here",
+  "Second topic idea here"
+]`;
+
+  const cleanJSON = (str: string) => {
+    let clean = str.trim();
+    clean = clean.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+    if (clean.startsWith('```json')) clean = clean.replace(/^```json/, '');
+    if (clean.startsWith('```')) clean = clean.replace(/^```/, '');
+    if (clean.endsWith('```')) clean = clean.replace(/```$/, '');
+    clean = clean.trim();
+    const firstBrace = clean.indexOf('[');
+    const lastBrace = clean.lastIndexOf(']');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      clean = clean.substring(firstBrace, lastBrace + 1);
+    }
+    return JSON.parse(clean);
+  };
+
+  const tryGemini = async () => {
+    if (!process.env.GEMINI_API_KEY) throw new Error("No Gemini key");
+    const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+    let lastError = null;
+    for (const model of models) {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`, {
+          method: "POST", 
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { 
+              responseMimeType: "application/json",
+              maxOutputTokens: 2000,
+              temperature: 0.7
+            }
+          }),
+          signal: AbortSignal.timeout(30000),
+          cache: "no-store"
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const json = await response.json();
+        return cleanJSON(json.candidates[0].content.parts[0].text);
+      } catch (e: any) {
+        lastError = e;
+      }
+    }
+    throw lastError || new Error("Gemini failed");
+  };
+
+  const tryOpenAIFormat = async (url: string, key: string, model: string, providerName: string) => {
+    if (!key) throw new Error(`No key for ${providerName}`);
+    const body: any = {
+      model,
+      messages: [{ role: "user", content: prompt }],
+      max_tokens: 2000,
+      temperature: 0.7
+    };
+    if (!url.includes('integrate.api.nvidia.com')) {
+      body.response_format = { type: "json_object" };
+    }
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(30000),
+      cache: "no-store"
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const json = await response.json();
+    return cleanJSON(json.choices[0].message.content);
+  };
+
+  const providers = [
+    { name: 'Gemini', fn: tryGemini },
+    { 
+      name: 'Groq Llama 3.3', 
+      fn: () => tryOpenAIFormat('https://api.groq.com/openai/v1/chat/completions', process.env.GROQ_API_KEY || '', 'llama-3.3-70b-versatile', 'Groq') 
+    },
+    {
+      name: 'OpenRouter',
+      fn: async () => {
+        const key = process.env.OPENROUTER_API_KEY;
+        if (!key) throw new Error("No OpenRouter key");
+        return tryOpenAIFormat('https://openrouter.ai/api/v1/chat/completions', key, 'google/gemini-2.0-flash-lite:free', 'OpenRouter');
+      }
+    }
+  ];
+
+  for (const provider of providers) {
+    try {
+      console.log(`Generating topics with ${provider.name}...`);
+      const topics = await provider.fn();
+      if (Array.isArray(topics) && topics.length > 0) {
+        return topics.map(t => String(t).trim());
+      }
+    } catch (e: any) {
+      console.log(`❌ Topic generation failed for ${provider.name}:`, e.message);
+    }
+  }
+
+  // Final fallback topics if everything fails
+  return [
+    `How Pathseekers School Excels in ${category}`,
+    `Tips for Excellence in ${category} at CBSE level`,
+    `Fostering Growth and Development in ${category}`,
+    `The Importance of ${category} in Modern Schooling`
+  ];
+}
+

@@ -100,6 +100,14 @@ export default function EditorialStories() {
     }
   };
 
+  const uniqueCategories = Array.from(new Set([
+    "Education",
+    "School Events",
+    "Achievements",
+    "News",
+    ...blogs.map((b) => b.category).filter(Boolean)
+  ]));
+
   const filteredBlogs = blogs.filter((blog) => {
     const matchesSearch =
       blog.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -162,10 +170,9 @@ export default function EditorialStories() {
               className="px-3.5 py-2.5 rounded-xl border border-slate-800 bg-slate-950 text-xs text-slate-250 focus:outline-none w-full sm:w-36"
             >
               <option value="All">All Categories</option>
-              <option value="Education">Education</option>
-              <option value="School Events">School Events</option>
-              <option value="Achievements">Achievements</option>
-              <option value="News">News</option>
+              {uniqueCategories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
 
             <select
