@@ -1,7 +1,4 @@
-"use client";
-
-import { useEffect, useRef } from "react";
-
+// Pure CSS marquee — zero JS, zero forced reflow, zero main-thread work
 const NEWS_ITEMS = [
   "Admissions open for Academic Session 2026-27. Contact administration for details.",
   "Annual Sports Meet scheduled for 15th November 2025.",
@@ -11,31 +8,7 @@ const NEWS_ITEMS = [
 ];
 
 export default function NewsTicker() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animId: number;
-    let pos = 0;
-    const speed = 0.5; // pixels per frame
-
-    const animate = () => {
-      pos -= speed;
-      // Reset when first half has scrolled out
-      if (Math.abs(pos) >= el.scrollWidth / 2) {
-        pos = 0;
-      }
-      el.style.transform = `translateX(${pos}px)`;
-      animId = requestAnimationFrame(animate);
-    };
-
-    animId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animId);
-  }, []);
-
-  // Duplicate items for seamless loop
+  // Duplicate for seamless loop
   const doubled = [...NEWS_ITEMS, ...NEWS_ITEMS];
 
   return (
@@ -43,10 +16,7 @@ export default function NewsTicker() {
       <div className="absolute left-0 bg-primary-900 z-10 px-4 sm:px-6 h-full flex items-center shadow-[15px_0_15px_-5px_rgba(1,28,60,1)] uppercase tracking-widest text-accent-gold font-bold">
         📢 Updates
       </div>
-      <div
-        ref={scrollRef}
-        className="flex whitespace-nowrap pl-32 sm:pl-40 will-change-transform"
-      >
+      <div className="flex whitespace-nowrap pl-32 sm:pl-40 news-ticker-track">
         {doubled.map((item, idx) => (
           <span key={idx} className="mx-8 flex items-center text-stone-200">
             <span className="w-1.5 h-1.5 rounded-full bg-accent-gold mr-3 shrink-0"></span>

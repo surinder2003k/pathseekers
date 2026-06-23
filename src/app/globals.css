@@ -148,6 +148,11 @@ body {
 .animate-marquee {
   animation: marquee 25s linear infinite;
 }
+/* Pure CSS ticker — no JS, no forced reflow */
+.news-ticker-track {
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
 
 /* Card lift hover */
 .card-lift {

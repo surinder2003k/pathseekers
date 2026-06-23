@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight, ShieldCheck, ChevronDown, GraduationCap, Phone, Mail } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import NewsTicker from "@/components/ui/NewsTicker";
 
 const NAV_LINKS = [
@@ -86,17 +85,12 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={`relative px-3 py-2 text-[13px] font-semibold tracking-wide transition-colors ${
-                      isActive ? "text-primary-800" : "text-stone-600 hover:text-primary-700"
+                      isActive
+                        ? "text-primary-800 border-b-2 border-primary-700"
+                        : "text-stone-600 hover:text-primary-700 border-b-2 border-transparent"
                     }`}
                   >
                     {link.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="activeNavIndicator"
-                        className="absolute bottom-0 left-3 right-3 h-[2px] bg-primary-700 rounded-full"
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
                   </Link>
                 );
               })}
@@ -124,44 +118,38 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Drawer Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="lg:hidden bg-white border-b border-stone-200 overflow-hidden shadow-inner"
-            >
-              <div className="px-4 pt-2 pb-6 space-y-1">
-                {NAV_LINKS.map((link) => {
-                  const isActive = pathname === link.href;
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${
-                        isActive
-                          ? "bg-primary-50 text-primary-800"
-                          : "text-stone-600 hover:bg-stone-50 hover:text-primary-700"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                })}
-                <div className="pt-4 border-t border-stone-100 px-4">
-                  <Link
-                    href="/contact"
-                    className="block text-center px-5 py-3 bg-gradient-to-r from-primary-800 to-primary-600 text-white text-sm font-bold rounded-full shadow-md"
-                  >
-                    Enquire Now
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div
+          className={`lg:hidden bg-white border-b border-stone-200 overflow-hidden shadow-inner transition-all duration-300 ${
+            isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="px-4 pt-2 pb-6 space-y-1">
+            {NAV_LINKS.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors ${
+                    isActive
+                      ? "bg-primary-50 text-primary-800"
+                      : "text-stone-600 hover:bg-stone-50 hover:text-primary-700"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+            <div className="pt-4 border-t border-stone-100 px-4">
+              <Link
+                href="/contact"
+                className="block text-center px-5 py-3 bg-gradient-to-r from-primary-800 to-primary-600 text-white text-sm font-bold rounded-full shadow-md"
+              >
+                Enquire Now
+              </Link>
+            </div>
+          </div>
+        </div>
       </header>
     </>
   );
