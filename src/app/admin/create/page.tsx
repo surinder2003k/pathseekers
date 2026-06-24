@@ -106,13 +106,35 @@ function EditorialSuite() {
     }
   }, [form.title]);
 
-  // Load story for editing
+  // Load story for editing or reset form for new story creation
   useEffect(() => {
-    if (!storyId) return;
+    if (!storyId) {
+      setForm({
+        id: "",
+        title: "",
+        slug: "",
+        excerpt: "",
+        content: "",
+        featuredImage: "",
+        status: "DRAFT",
+        author: "Gurvinder Singh Dhillon",
+        category: "Education",
+        metaTitle: "",
+        metaDescription: "",
+        keywords: "",
+      });
+      setWordCount(0);
+      setTopicInput("");
+      setAiSuccess(false);
+      return;
+    }
+
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/admin/stories");
+        const res = await fetch(`/api/admin/stories?t=${Date.now()}`, {
+          cache: "no-store",
+        });
         if (res.ok) {
           const all = await res.json();
           const match = all.find((b: any) => b.id === storyId);
@@ -133,7 +155,11 @@ function EditorialSuite() {
             });
           }
         }
-      } catch (e) { console.error(e); } finally { setLoading(false); }
+      } catch (e) {
+        console.error("Error loading story for editing:", e);
+      } finally {
+        setLoading(false);
+      }
     })();
   }, [storyId]);
 
