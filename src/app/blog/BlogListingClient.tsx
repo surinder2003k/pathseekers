@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Calendar, Eye, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Calendar, ArrowRight, BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
 interface BlogListingClientProps {
@@ -121,10 +121,6 @@ export default function BlogListingClient({ initialBlogs }: BlogListingClientPro
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-stone-500" />
                       {formatDate(blog.publishedAt)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Eye className="w-3.5 h-3.5 text-stone-500" />
-                      {blog.views} Views
                     </span>
                   </div>
                 </motion.article>

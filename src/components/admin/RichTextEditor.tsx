@@ -91,13 +91,89 @@ export default function RichTextEditor({
     setActiveFormats(formats);
   }, []);
 
+  const savedSelectionRef = useRef<Range | null>(null);
+
+  const saveSelection = useCallback(() => {
+    if (typeof window === "undefined") return;
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      savedSelectionRef.current = sel.getRangeAt(0);
+    }
+  }, []);
+
+  const restoreSelection = useCallback(() => {
+    if (typeof window === "undefined") return;
+    editorRef.current?.focus();
+    const sel = window.getSelection();
+    if (!sel) return;
+    if (savedSelectionRef.current) {
+      sel.removeAllRanges();
+      sel.addRange(savedSelectionRef.current);
+    } else {
+      const range = document.createRange();
+      if (editorRef.current) {
+        range.selectNodeContents(editorRef.current);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }
+  }, []);
+
+  const insertLinkAtSelection = useCallback((url: string) => {
+    restoreSelection();
+    const sel = window.getSelection();
+    if (!sel) return;
+
+    let isCollapsed = true;
+    if (sel.rangeCount > 0) {
+      isCollapsed = sel.getRangeAt(0).collapsed;
+    }
+
+    if (isCollapsed) {
+      const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+      if (range && editorRef.current) {
+        const link = document.createElement("a");
+        link.href = url;
+        link.textContent = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+
+        range.insertNode(link);
+
+        // Move cursor after the link
+        const newRange = document.createRange();
+        newRange.setStartAfter(link);
+        newRange.setEndAfter(link);
+        sel.removeAllRanges();
+        sel.addRange(newRange);
+
+        isInternalUpdate.current = true;
+        onChange(editorRef.current.innerHTML || "");
+        updateCounts();
+      }
+    } else {
+      editorRef.current?.focus();
+      document.execCommand("createLink", false, url);
+      isInternalUpdate.current = true;
+      onChange(editorRef.current?.innerHTML || "");
+      updateCounts();
+    }
+  }, [onChange, updateCounts, restoreSelection]);
+
   const handleInput = useCallback(() => {
     if (!editorRef.current) return;
     isInternalUpdate.current = true;
     const html = editorRef.current.innerHTML;
     onChange(html === "<br>" ? "" : html);
     updateCounts();
-  }, [onChange, updateCounts]);
+    saveSelection();
+  }, [onChange, updateCounts, saveSelection]);
+
+  const handleEditorEvent = useCallback(() => {
+    updateActiveFormats();
+    saveSelection();
+  }, [updateActiveFormats, saveSelection]);
 
   const exec = useCallback((command: string, value?: string) => {
     editorRef.current?.focus();
@@ -106,7 +182,8 @@ export default function RichTextEditor({
     onChange(editorRef.current?.innerHTML || "");
     updateCounts();
     updateActiveFormats();
-  }, [onChange, updateCounts, updateActiveFormats]);
+    saveSelection();
+  }, [onChange, updateCounts, updateActiveFormats, saveSelection]);
 
   const insertHeading = useCallback((tag: "h2" | "h3" | "h4") => {
     editorRef.current?.focus();
@@ -114,11 +191,13 @@ export default function RichTextEditor({
     isInternalUpdate.current = true;
     onChange(editorRef.current?.innerHTML || "");
     updateActiveFormats();
-  }, [onChange, updateActiveFormats]);
+    saveSelection();
+  }, [onChange, updateActiveFormats, saveSelection]);
 
   const insertLink = useCallback(() => {
+    saveSelection();
     setPromptOpen(true);
-  }, []);
+  }, [saveSelection]);
 
   const insertHR = useCallback(() => {
     editorRef.current?.focus();
@@ -188,7 +267,7 @@ export default function RichTextEditor({
   const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
   type ToolItem =
-    | { type: "btn"; icon: React.ElementType; cmd?: string; action?: () => void; title: string; format?: string }
+    | { type: "btn"; icon: React.ElementType; cmd?: string; actionId?: string; title: string; format?: string }
     | { type: "sep" };
 
   const tools: ToolItem[] = [
@@ -197,9 +276,9 @@ export default function RichTextEditor({
     { type: "btn", icon: Underline, cmd: "underline", title: "Underline (Ctrl+U)", format: "underline" },
     { type: "btn", icon: Strikethrough, cmd: "strikeThrough", title: "Strikethrough", format: "strikeThrough" },
     { type: "sep" },
-    { type: "btn", icon: Heading1, action: () => insertHeading("h2"), title: "Heading 1" },
-    { type: "btn", icon: Heading2, action: () => insertHeading("h3"), title: "Heading 2" },
-    { type: "btn", icon: Heading3, action: () => insertHeading("h4"), title: "Heading 3" },
+    { type: "btn", icon: Heading1, actionId: "h2", title: "Heading 1" },
+    { type: "btn", icon: Heading2, actionId: "h3", title: "Heading 2" },
+    { type: "btn", icon: Heading3, actionId: "h4", title: "Heading 3" },
     { type: "sep" },
     { type: "btn", icon: AlignLeft, cmd: "justifyLeft", title: "Align Left" },
     { type: "btn", icon: AlignCenter, cmd: "justifyCenter", title: "Align Center" },
@@ -207,11 +286,11 @@ export default function RichTextEditor({
     { type: "sep" },
     { type: "btn", icon: List, cmd: "insertUnorderedList", title: "Bullet List" },
     { type: "btn", icon: ListOrdered, cmd: "insertOrderedList", title: "Numbered List" },
-    { type: "btn", icon: Quote, action: insertBlockquote, title: "Blockquote" },
-    { type: "btn", icon: Minus, action: insertHR, title: "Divider" },
+    { type: "btn", icon: Quote, actionId: "blockquote", title: "Blockquote" },
+    { type: "btn", icon: Minus, actionId: "hr", title: "Divider" },
     { type: "sep" },
-    { type: "btn", icon: LinkIcon, action: insertLink, title: "Insert Link" },
-    { type: "btn", icon: ImagePlus, action: triggerImageUpload, title: "Insert Image" },
+    { type: "btn", icon: LinkIcon, actionId: "link", title: "Insert Link" },
+    { type: "btn", icon: ImagePlus, actionId: "image", title: "Insert Image" },
     { type: "sep" },
     { type: "btn", icon: Undo, cmd: "undo", title: "Undo (Ctrl+Z)" },
     { type: "btn", icon: Redo, cmd: "redo", title: "Redo (Ctrl+Y)" },
@@ -235,8 +314,14 @@ export default function RichTextEditor({
               disabled={imageUploading}
               onMouseDown={(e) => {
                 e.preventDefault();
-                if (tool.action) {
-                  tool.action();
+                if (tool.actionId) {
+                  if (tool.actionId === "h2") insertHeading("h2");
+                  else if (tool.actionId === "h3") insertHeading("h3");
+                  else if (tool.actionId === "h4") insertHeading("h4");
+                  else if (tool.actionId === "blockquote") insertBlockquote();
+                  else if (tool.actionId === "hr") insertHR();
+                  else if (tool.actionId === "link") insertLink();
+                  else if (tool.actionId === "image") triggerImageUpload();
                 } else if (tool.cmd) {
                   exec(tool.cmd);
                 }
@@ -265,11 +350,11 @@ export default function RichTextEditor({
         contentEditable
         suppressContentEditableWarning
         onInput={handleInput}
-        onKeyUp={updateActiveFormats}
-        onMouseUp={updateActiveFormats}
+        onKeyUp={handleEditorEvent}
+        onMouseUp={handleEditorEvent}
         data-placeholder={placeholder}
-        className="rich-editor-body outline-none px-7 py-5 text-slate-200 text-[15px] leading-relaxed"
-        style={{ minHeight }}
+        className="rich-editor-body outline-none px-7 py-5 text-slate-200 text-[15px] leading-relaxed overflow-y-auto"
+        style={{ minHeight, maxHeight: "550px" }}
       />
 
       {/* Stats bar */}
@@ -299,6 +384,19 @@ export default function RichTextEditor({
           content: attr(data-placeholder);
           color: #4b5563;
           pointer-events: none;
+        }
+        .rich-editor-body::-webkit-scrollbar {
+          width: 8px;
+        }
+        .rich-editor-body::-webkit-scrollbar-track {
+          background: rgba(15, 23, 42, 0.3);
+        }
+        .rich-editor-body::-webkit-scrollbar-thumb {
+          background: rgba(148, 163, 184, 0.25);
+          border-radius: 4px;
+        }
+        .rich-editor-body::-webkit-scrollbar-thumb:hover {
+          background: rgba(148, 163, 184, 0.4);
         }
         .rich-editor-body h2 { font-size: 1.5rem; font-weight: 700; margin: 1.25em 0 0.5em; color: #f8fafc; }
         .rich-editor-body h3 { font-size: 1.25rem; font-weight: 700; margin: 1em 0 0.4em; color: #f1f5f9; }
@@ -333,7 +431,7 @@ export default function RichTextEditor({
         message="Enter the URL for the link:"
         placeholder="https://example.com"
         onConfirm={(url) => {
-          if (url) exec("createLink", url);
+          if (url) insertLinkAtSelection(url);
         }}
         onClose={() => setPromptOpen(false)}
       />

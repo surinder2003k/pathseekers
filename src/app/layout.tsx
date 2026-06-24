@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import ToasterProvider from "@/components/ToasterProvider";
+import ScrollToTop from "@/components/ui/ScrollToTop";
 import "./globals.css";
 
 import { getBaseUrl } from "@/lib/seo";
@@ -213,6 +214,7 @@ export default function RootLayout({
         className={`${outfit.variable} ${playfair.variable} font-sans min-h-screen bg-[#fafaf9] text-[#1c1917] antialiased flex flex-col`}
       >
         <ToasterProvider />
+        <ScrollToTop />
         {/* JSON-LD Structured Data */}
         <script
           id="school-jsonld"

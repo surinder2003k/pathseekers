@@ -172,7 +172,7 @@ export default function AdminDirectory() {
                 required
                 value={newForm.email}
                 onChange={(e) => setNewForm({ ...newForm, email: e.target.value })}
-                placeholder="e.g. xxx@pathseekers.edu.in"
+                placeholder="e.g. name@pathseekers.education"
                 className="w-full px-4 py-2.5 rounded-xl border border-slate-800 bg-slate-950 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-550 focus:border-primary-550 transition-all"
               />
             </div>

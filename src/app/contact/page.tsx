@@ -129,7 +129,7 @@ export default function ContactPage() {
               </div>
               <h3 className="font-serif text-lg font-bold text-stone-900 mb-2">Phone</h3>
               <p className="text-sm text-stone-500 leading-relaxed">
-                <a href="tel:+919876500000" className="hover:text-primary-700 transition-colors">+91-XXXXX-XXXXX</a><br />
+                <a href="tel:+911853271739" className="hover:text-primary-700 transition-colors">+91-1853-271739</a><br />
                 <span className="text-xs text-stone-400">Monday – Saturday, 8 AM – 4 PM</span>
               </p>
             </div>
@@ -141,8 +141,8 @@ export default function ContactPage() {
               </div>
               <h3 className="font-serif text-lg font-bold text-stone-900 mb-2">Email</h3>
               <p className="text-sm text-stone-500 leading-relaxed">
-                <a href="mailto:xxx@pathseekers.edu.in" className="hover:text-primary-700 transition-colors">xxx@pathseekers.edu.in</a><br />
-                <a href="mailto:xxx@pathseekers.edu.in" className="hover:text-primary-700 transition-colors text-xs text-stone-400">xxx@pathseekers.edu.in</a>
+                <a href="mailto:school_beas@pathseekers.education" className="hover:text-primary-700 transition-colors">school_beas@pathseekers.education</a><br />
+                <span className="text-xs text-stone-400">Official Inquiries & Support</span>
               </p>
             </div>
           </div>
@@ -220,7 +220,7 @@ export default function ContactPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+91-XXXXX-XXXXX"
+                        placeholder="+91-1853-271739"
                         className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-[#fafaf9] text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400 transition-all"
                       />
                     </div>

@@ -21,6 +21,7 @@ export default function ShareButtons({ slug, title }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShareUrl(`${window.location.origin}/blog/${slug}`);
   }, [slug]);
 

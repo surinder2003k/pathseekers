@@ -292,7 +292,7 @@ export default async function Home() {
             {TESTIMONIALS.map((t, idx) => (
               <div key={idx} className="p-8 bg-stone-800 rounded-2xl border border-stone-700/50 text-left flex flex-col justify-between">
                 <p className="text-stone-300 text-sm leading-relaxed mb-6 italic">
-                  "{t.text}"
+                  &ldquo;{t.text}&rdquo;
                 </p>
                 <div>
                   <h4 className="font-serif font-bold text-white text-base">{t.author}</h4>
@@ -347,9 +347,8 @@ export default async function Home() {
                     <p className="text-xs text-stone-500 line-clamp-3 mb-4">{blog.excerpt}</p>
                   </div>
                 </div>
-                <div className="px-6 pb-6 pt-2 flex items-center justify-between border-t border-stone-100 text-[11px] text-stone-600 font-medium">
+                <div className="px-6 pb-6 pt-2 border-t border-stone-100 text-[11px] text-stone-600 font-medium">
                   <span>{formatDate(blog.publishedAt)}</span>
-                  <span>{blog.views} Views</span>
                 </div>
               </Link>
             ))}
@@ -363,7 +362,7 @@ export default async function Home() {
           <div className="relative z-10">
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-4">Ready to Begin Your Journey?</h2>
             <p className="text-primary-100 text-sm sm:text-base max-w-xl mx-auto mb-8 leading-relaxed">
-              Admissions are open for the academic session 2026-27. Secure your child's placement in Beas' leading CBSE school today.
+              Admissions are open for the academic session 2026-27. Secure your child&apos;s placement in Beas&apos; leading CBSE school today.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link

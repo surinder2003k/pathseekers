@@ -271,7 +271,7 @@ export default function FacultyPage() {
                 Inquire Careers
               </Link>
               <a
-                href="mailto:xxx@pathseekers.edu.in"
+                href="mailto:school_beas@pathseekers.education"
                 className="w-full sm:w-auto px-8 py-3.5 border border-white/40 text-white hover:bg-white/10 font-bold rounded-full transition-all text-center tracking-wide"
               >
                 Submit Resume

@@ -55,7 +55,7 @@ export default function Footer() {
               <a href="#" className="w-8 h-8 rounded-full bg-stone-800 hover:bg-primary-800 flex items-center justify-center text-stone-300 hover:text-white transition-colors" aria-label="Youtube">
                 <YoutubeIcon className="w-4 h-4" />
               </a>
-              <a href="mailto:xyzg135@gmail.com" className="w-8 h-8 rounded-full bg-stone-800 hover:bg-primary-800 flex items-center justify-center text-stone-300 hover:text-white transition-colors" aria-label="Email">
+              <a href="mailto:school_beas@pathseekers.education" className="w-8 h-8 rounded-full bg-stone-800 hover:bg-primary-800 flex items-center justify-center text-stone-300 hover:text-white transition-colors" aria-label="Email">
                 <Mail className="w-4 h-4" />
               </a>
             </div>
@@ -123,11 +123,11 @@ export default function Footer() {
               </li>
               <li className="flex gap-3 items-center">
                 <Phone className="w-4 h-4 text-primary-500 shrink-0" />
-                <span>+91-XXXXX-XXXXX</span>
+                <span>+91-1853-271739</span>
               </li>
               <li className="flex gap-3 items-center">
                 <Mail className="w-4 h-4 text-primary-500 shrink-0" />
-                <a href="mailto:xxx@pathseekers.edu.in" className="hover:text-white transition-colors">xxx@pathseekers.edu.in</a>
+                <a href="mailto:school_beas@pathseekers.education" className="hover:text-white transition-colors">school_beas@pathseekers.education</a>
               </li>
             </ul>
           </div>

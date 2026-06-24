@@ -305,8 +305,8 @@ export default function LegalPage() {
             <div className="bg-white p-6 rounded-2xl border border-stone-200/50 space-y-3 mb-6">
               {[
                 { label: "Designated Officer", value: "Mr. Sukhwinder Pal, Administrative Head" },
-                { label: "Email", value: "xxx@pathseekers.edu.in" },
-                { label: "Phone", value: "+91-XXXXX-XXXXX (Mon–Sat, 9 AM – 3 PM)" },
+                { label: "Email", value: "school_beas@pathseekers.education" },
+                { label: "Phone", value: "+91-1853-271739 (Mon–Sat, 9 AM – 3 PM)" },
                 { label: "Address", value: "Pathseekers School, GT Road, Beas, Amritsar, Punjab 143204" },
               ].map((item, idx) => (
                 <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
