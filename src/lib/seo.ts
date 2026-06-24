@@ -1,16 +1,18 @@
+// CANONICAL PRODUCTION URL — used for SEO, sitemap, canonical links
+const CANONICAL_URL = "https://pathseekers.vercel.app";
+
 export const getBaseUrl = () => {
-  // 1. Explicitly set canonical URL — always wins
+  // 1. Explicitly set canonical URL — always wins (set in Vercel env vars)
   if (process.env.NEXT_PUBLIC_BASE_URL) {
     return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, "");
   }
-  // 2. Vercel production — use VERCEL_PROJECT_PRODUCTION_URL (stable, not per-deployment)
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
+  // 2. On server: always use the hardcoded canonical production URL
+  //    NOTE: Do NOT use VERCEL_PROJECT_PRODUCTION_URL here — it can resolve
+  //    to preview/branch deployment URLs and break Google sitemap validation.
+  if (typeof window === "undefined") {
+    return CANONICAL_URL;
   }
-  // 3. Client-side fallback
-  if (typeof window !== "undefined") {
-    return window.location.origin;
-  }
-  // 4. Hardcoded canonical fallback
-  return "https://pathseekers.vercel.app";
+  // 3. Client-side: use the actual origin (correct in all environments)
+  return window.location.origin;
 };
+
