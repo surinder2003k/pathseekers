@@ -66,13 +66,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 
-export default async function BlogPostPage({ params }: PageProps) {
+export default async function BlogPostPage({ params, searchParams }: PageProps & { searchParams?: Record<string, string> }) {
   const { slug } = await params;
   const blog = await db.blogPost.findUnique({
     where: { slug }
   });
 
-  if (!blog || blog.status !== "PUBLISHED") {
+    // Allow preview of drafts via ?preview=true query param
+  const previewMode = searchParams?.preview === "true";
+  if (!blog || (blog.status !== "PUBLISHED" && !previewMode)) {
     notFound();
   }
 
