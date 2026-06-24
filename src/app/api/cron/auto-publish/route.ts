@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { generateBlogWithAI, generateTopicsForCategory } from "@/lib/gemini";
 import { searchImages } from "@/lib/pexels";
+import { enrichBlogWithExternalLinks } from "@/lib/external-links";
 
 const TOPIC_SUGGESTIONS: Record<string, string[]> = {
   "Education": [
@@ -144,6 +145,14 @@ async function handleAutoPublish(req: Request) {
     for (const topic of selectedTopics) {
       // A. Generate Blog with AI
       const blogContent = await generateBlogWithAI(topic, category);
+
+      // A2. Enrich blog with external links from partner sitemaps
+      try {
+        blogContent.content = await enrichBlogWithExternalLinks(blogContent.content, topic);
+        console.log(`🔗 External links injected for: "${topic}"`);
+      } catch (err: any) {
+        console.error('⚠️ External link enrichment failed (continuing without):', err.message);
+      }
 
       // B. Fetch Image from search
       let imageUrl = "/school/8.jpg";
