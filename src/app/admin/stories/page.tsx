@@ -129,8 +129,6 @@ export default function EditorialStories() {
 
   return (
     <div className="space-y-8 text-slate-200">
-
-    <div className="space-y-8 text-slate-200">
       
       {/* Top Banner */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
