@@ -16,9 +16,12 @@ import {
   X,
   FileText,
   Globe,
-  EyeOff
+  EyeOff,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+const PAGE_SIZE = 10;
 import ConfirmModal from "@/components/admin/ConfirmModal";
 
 export default function EditorialStories() {
@@ -29,6 +32,7 @@ export default function EditorialStories() {
   const [selectedCat, setSelectedCat] = useState("All");
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; id: string }>({
     isOpen: false,
     id: ""
@@ -117,9 +121,15 @@ export default function EditorialStories() {
     const matchesStatus = selectedStatus === "All" || blog.status === selectedStatus;
 
     return matchesSearch && matchesCategory && matchesStatus;
-  });
+    });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredBlogs.length / PAGE_SIZE);
+  const paginatedBlogs = filteredBlogs.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
   return (
+    <div className="space-y-8 text-slate-200">
+
     <div className="space-y-8 text-slate-200">
       
       {/* Top Banner */}
@@ -206,7 +216,8 @@ export default function EditorialStories() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-850">
-                {filteredBlogs.map((blog) => (
+                {paginatedBlogs.map((blog) => (
+
                   <tr key={blog.id} className="hover:bg-slate-850/30 transition-colors">
                     
                     {/* Title & Excerpt */}
@@ -299,6 +310,29 @@ export default function EditorialStories() {
                 )}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-1.5 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-50"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-sm text-slate-400">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="p-1.5 rounded bg-slate-800 text-slate-300 hover:bg-slate-700 disabled:opacity-50"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
         )}
 

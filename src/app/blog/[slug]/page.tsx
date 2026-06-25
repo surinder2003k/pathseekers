@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Eye, ExternalLink } from "lucide-react";
+import { ArrowLeft, Calendar, ExternalLink } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ShareButtons from "@/components/blog/ShareButtons";
@@ -144,11 +144,7 @@ export default async function BlogPostPage({ params, searchParams }: PageProps &
                 <Calendar className="w-3.5 h-3.5" />
                 {formatDate(blog.publishedAt || blog.createdAt)}
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-stone-300"></span>
-              <span className="flex items-center gap-1">
-                <Eye className="w-3.5 h-3.5" />
-                {blog.views} Views
-              </span>
+
             </div>
           </header>
 

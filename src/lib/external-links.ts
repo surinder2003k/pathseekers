@@ -3,6 +3,9 @@
  * 
  * Fetches URLs from partner sitemaps and injects relevant external links
  * into AI-generated blog content to boost SEO and cross-site indexing.
+ * 
+ * STRATEGY: Inject as many natural external links as possible for maximum
+ * SEO benefit — both inline contextual links and a resources section.
  */
 
 // Partner sitemaps to fetch and interlink with
@@ -11,6 +14,30 @@ const PARTNER_SITEMAPS = [
   'https://xeloria.vercel.app/sitemap.xml',
   'https://pulse-blog-ai.vercel.app/sitemap.xml',
 ];
+
+// High-value SEO anchor text keywords for education/school niche
+const SEO_ANCHOR_PHRASES: Record<string, string[]> = {
+  'education': ['modern education', 'quality education', 'education trends', 'learning methods', 'educational resources'],
+  'learning': ['effective learning', 'learning strategies', 'learning techniques', 'student learning', 'online learning'],
+  'school': ['top school', 'school excellence', 'school activities', 'school management', 'school community'],
+  'student': ['student success', 'student development', 'student growth', 'student life', 'student achievement'],
+  'teacher': ['teacher training', 'teacher development', 'teaching methods', 'teacher resources', 'skilled teachers'],
+  'cbse': ['CBSE curriculum', 'CBSE board', 'CBSE syllabus', 'CBSE exam preparation', 'CBSE standards'],
+  'parent': ['parenting tips', 'parent involvement', 'parent guide', 'parenting strategies', 'parent-teacher collaboration'],
+  'technology': ['educational technology', 'tech in schools', 'digital learning', 'smart classrooms', 'AI in education'],
+  'skill': ['skill development', 'life skills', 'soft skills', 'critical skills', '21st century skills'],
+  'career': ['career guidance', 'career planning', 'career counseling', 'future careers', 'career readiness'],
+  'health': ['student health', 'mental health', 'physical fitness', 'healthy habits', 'wellness programs'],
+  'science': ['science education', 'STEM learning', 'science projects', 'scientific thinking', 'science labs'],
+  'math': ['mathematics skills', 'math learning', 'math fundamentals', 'mathematical thinking', 'math practice'],
+  'reading': ['reading habits', 'reading skills', 'literacy development', 'love for reading', 'reading programs'],
+  'sport': ['sports training', 'athletics program', 'physical education', 'sports achievements', 'sportsmanship'],
+  'art': ['art education', 'creative arts', 'performing arts', 'art and culture', 'artistic expression'],
+  'exam': ['exam preparation', 'exam tips', 'exam strategy', 'board exams', 'competitive exams'],
+  'development': ['child development', 'holistic development', 'personality development', 'cognitive development', 'overall development'],
+  'innovation': ['innovative teaching', 'innovation in education', 'creative innovation', 'innovative methods', 'innovative approach'],
+  'community': ['school community', 'community building', 'community outreach', 'community engagement', 'community service'],
+};
 
 // Cache for sitemap URLs (avoid re-fetching every time)
 let cachedSitemapUrls: { urls: SitemapUrl[]; fetchedAt: number } | null = null;
@@ -126,8 +153,9 @@ export async function fetchAllSitemapUrls(): Promise<SitemapUrl[]> {
 /**
  * Find the most relevant external URLs for a given blog topic
  * Uses keyword matching between the topic and sitemap URL slugs
+ * Now returns up to 20 links for maximum SEO interlinking
  */
-export function findRelevantLinks(topic: string, sitemapUrls: SitemapUrl[], count: number = 6): SitemapUrl[] {
+export function findRelevantLinks(topic: string, sitemapUrls: SitemapUrl[], count: number = 20): SitemapUrl[] {
   const topicKeywords = extractKeywordsFromSlug(topic.toLowerCase().replace(/[^a-z0-9\s-]/g, ''));
   
   if (topicKeywords.length === 0) {
@@ -156,7 +184,7 @@ export function findRelevantLinks(topic: string, sitemapUrls: SitemapUrl[], coun
   // Take top matches, ensuring diversity across sites
   const selected: SitemapUrl[] = [];
   const perSiteCount: Record<string, number> = {};
-  const maxPerSite = Math.ceil(count / PARTNER_SITEMAPS.length) + 1;
+  const maxPerSite = Math.ceil(count / PARTNER_SITEMAPS.length) + 2;
 
   for (const item of scored) {
     if (selected.length >= count) break;
@@ -209,19 +237,42 @@ function getRandomLinksPerSite(urls: SitemapUrl[], count: number): SitemapUrl[] 
 }
 
 /**
+ * Generate natural anchor text for a link based on its slug and topic context
+ */
+function generateAnchorText(link: SitemapUrl, topicKeywords: string[]): string {
+  // Try to find a matching SEO phrase
+  for (const kw of link.keywords) {
+    if (SEO_ANCHOR_PHRASES[kw]) {
+      const phrases = SEO_ANCHOR_PHRASES[kw];
+      return phrases[Math.floor(Math.random() * phrases.length)];
+    }
+  }
+  
+  // Check topic keywords for matching phrases
+  for (const kw of topicKeywords) {
+    if (SEO_ANCHOR_PHRASES[kw]) {
+      const phrases = SEO_ANCHOR_PHRASES[kw];
+      return phrases[Math.floor(Math.random() * phrases.length)];
+    }
+  }
+
+  // Fallback: generate a readable title from slug
+  return link.slug
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    .substring(0, 60);
+}
+
+/**
  * Build a "Related Resources" HTML section with the external links
  */
-export function buildExternalLinksSection(links: SitemapUrl[]): string {
+export function buildExternalLinksSection(links: SitemapUrl[], topic: string): string {
   if (links.length === 0) return '';
 
-  const linkItems = links.map(link => {
-    // Generate a clean readable title from the slug
-    const title = link.slug
-      .replace(/[-_]/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase())
-      .replace(/\s+\w{1,5}$/i, '') // trim trailing hash-like suffixes
-      .substring(0, 80);
+  const topicKeywords = extractKeywordsFromSlug(topic.toLowerCase());
 
+  const linkItems = links.map(link => {
+    const title = generateAnchorText(link, topicKeywords);
     return `<li><a href="${link.loc}" target="_blank" rel="noopener">${title}</a></li>`;
   }).join('\n          ');
 
@@ -234,46 +285,80 @@ export function buildExternalLinksSection(links: SitemapUrl[]): string {
 }
 
 /**
- * Inject external links into the blog content HTML.
- * Adds links naturally in the middle and a "Resources" section at the end.
+ * Contextual phrases for inline link insertion — varied and natural sounding
  */
-export function injectExternalLinks(content: string, links: SitemapUrl[]): string {
+const INLINE_PHRASES = [
+  (anchor: string, url: string) => `You might also enjoy reading about <a href="${url}" target="_blank" rel="noopener">${anchor}</a>.`,
+  (anchor: string, url: string) => `For deeper insights, explore this helpful resource on <a href="${url}" target="_blank" rel="noopener">${anchor}</a>.`,
+  (anchor: string, url: string) => `Learn more about <a href="${url}" target="_blank" rel="noopener">${anchor}</a> to expand your understanding.`,
+  (anchor: string, url: string) => `This connects closely with <a href="${url}" target="_blank" rel="noopener">${anchor}</a>, which is worth exploring.`,
+  (anchor: string, url: string) => `A related topic worth checking out is <a href="${url}" target="_blank" rel="noopener">${anchor}</a>.`,
+  (anchor: string, url: string) => `Parents and students may find <a href="${url}" target="_blank" rel="noopener">${anchor}</a> particularly useful.`,
+  (anchor: string, url: string) => `For practical tips, see this guide on <a href="${url}" target="_blank" rel="noopener">${anchor}</a>.`,
+  (anchor: string, url: string) => `Discover more about <a href="${url}" target="_blank" rel="noopener">${anchor}</a> through this curated resource.`,
+  (anchor: string, url: string) => `If this interests you, also read about <a href="${url}" target="_blank" rel="noopener">${anchor}</a>.`,
+  (anchor: string, url: string) => `A comprehensive guide on <a href="${url}" target="_blank" rel="noopener">${anchor}</a> can offer additional perspective.`,
+  (anchor: string, url: string) => `This is closely related to <a href="${url}" target="_blank" rel="noopener">${anchor}</a> — a must-read for parents.`,
+  (anchor: string, url: string) => `Educators recommend reading more about <a href="${url}" target="_blank" rel="noopener">${anchor}</a>.`,
+];
+
+/**
+ * Inject external links into the blog content HTML.
+ * Adds MANY links naturally throughout — both inline contextual and a "Resources" section.
+ * Target: 8-10 inline links + 8-10 in resources section = 15-20 total links
+ */
+export function injectExternalLinks(content: string, links: SitemapUrl[], topic: string): string {
   if (links.length === 0) return content;
 
-  // Split links: some for inline insertion, rest for the resources section
-  const inlineLinks = links.slice(0, 2);
-  const sectionLinks = links.slice(2);
+  const topicKeywords = extractKeywordsFromSlug(topic.toLowerCase().replace(/[^a-z0-9\s-]/g, ''));
+
+  // Split links: half for inline, half for resources section
+  const inlineCount = Math.min(Math.ceil(links.length * 0.5), 10);
+  const inlineLinks = links.slice(0, inlineCount);
+  const sectionLinks = links.slice(inlineCount);
 
   let updatedContent = content;
 
-  // 1. Try to insert inline links within existing paragraphs
-  for (const link of inlineLinks) {
-    const title = link.slug
-      .replace(/[-_]/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase())
-      .substring(0, 60);
+  // 1. Insert inline links throughout paragraphs
+  const paragraphEnds = [...updatedContent.matchAll(/<\/p>/gi)];
+  
+  if (paragraphEnds.length >= 3) {
+    // Distribute inline links evenly across the content
+    let insertedCount = 0;
+    let offset = 0; // track cumulative offset from insertions
 
-    const inlineHtml = ` For more insights, you may also find this resource helpful: <a href="${link.loc}" target="_blank" rel="noopener">${title}</a>.`;
+    for (let i = 0; i < inlineLinks.length && insertedCount < inlineCount; i++) {
+      const link = inlineLinks[i];
+      const anchor = generateAnchorText(link, topicKeywords);
+      
+      // Pick a varied phrase template
+      const phraseTemplate = INLINE_PHRASES[(i + insertedCount) % INLINE_PHRASES.length];
+      const inlineHtml = ` ${phraseTemplate(anchor, link.loc)}`;
 
-    // Find a good </p> insertion point (roughly in the middle of the content)
-    const paragraphEnds = [...updatedContent.matchAll(/<\/p>/gi)];
-    if (paragraphEnds.length >= 4) {
-      // Insert after the paragraph roughly 40-60% through the content
-      const insertIdx = Math.floor(paragraphEnds.length * (0.3 + Math.random() * 0.3));
-      const insertPoint = paragraphEnds[insertIdx];
-      if (insertPoint && insertPoint.index !== undefined) {
+      // Calculate which paragraph to insert after (spread evenly, skip first and last)
+      const targetParagraphIdx = Math.floor(((i + 1) / (inlineLinks.length + 1)) * paragraphEnds.length);
+      const clampedIdx = Math.max(1, Math.min(targetParagraphIdx, paragraphEnds.length - 2));
+      
+      const match = paragraphEnds[clampedIdx];
+      if (match && match.index !== undefined) {
+        const insertPos = match.index + offset;
         updatedContent =
-          updatedContent.slice(0, insertPoint.index) +
+          updatedContent.slice(0, insertPos) +
           inlineHtml +
-          updatedContent.slice(insertPoint.index);
+          updatedContent.slice(insertPos);
+        offset += inlineHtml.length;
+        insertedCount++;
       }
     }
+    
+    console.log(`🔗 Injected ${insertedCount} inline external links`);
   }
 
   // 2. Append "Recommended Reading" section at the end  
   if (sectionLinks.length > 0) {
-    const resourcesSection = buildExternalLinksSection(sectionLinks);
+    const resourcesSection = buildExternalLinksSection(sectionLinks, topic);
     updatedContent += resourcesSection;
+    console.log(`📚 Added ${sectionLinks.length} links in resources section`);
   }
 
   return updatedContent;
@@ -281,6 +366,7 @@ export function injectExternalLinks(content: string, links: SitemapUrl[]): strin
 
 /**
  * Main function: fetch sitemaps, find relevant links, and inject into blog content
+ * Now targets 15-20 external links per blog for maximum SEO juice
  */
 export async function enrichBlogWithExternalLinks(
   content: string, 
@@ -294,10 +380,11 @@ export async function enrichBlogWithExternalLinks(
       return content;
     }
 
-    const relevantLinks = findRelevantLinks(topic, sitemapUrls, 6);
+    // Request up to 20 links for heavy interlinking
+    const relevantLinks = findRelevantLinks(topic, sitemapUrls, 20);
     console.log(`🔗 Found ${relevantLinks.length} relevant external links for "${topic}"`);
 
-    const enrichedContent = injectExternalLinks(content, relevantLinks);
+    const enrichedContent = injectExternalLinks(content, relevantLinks, topic);
     return enrichedContent;
   } catch (err: any) {
     console.error('❌ Failed to enrich blog with external links:', err.message);
